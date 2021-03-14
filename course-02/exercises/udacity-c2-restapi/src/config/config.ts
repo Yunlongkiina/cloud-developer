@@ -1,5 +1,5 @@
 export const config = {
-  "dev": {
+  "postgress": {
     "username": "",
     "password": "",
     "database": "",
