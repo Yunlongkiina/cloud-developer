@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -37,6 +37,23 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
+  app.get( "/filteredimage/",async ( req: Request, res: Response ) => {
+    let { image_url } = req.query;
+    if ( !image_url ) {
+      return res.status(400).send("Please provide an valid image url.");
+    }    
+    const imageOutPath = await filterImageFromURL(image_url);
+try{
+  res.status(200).sendFile(imageOutPath, err => {
+    if (!err) {
+      let imageArray: string[] = [imageOutPath];
+      deleteLocalFiles(imageArray);
+    }
+  });
+}catch{
+  return res.status(422).send("something wrong!!!");
+}    
+  } );  
 
   // Start the Server
   app.listen( port, () => {
